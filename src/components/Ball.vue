@@ -2,16 +2,16 @@
   <div id="Ball"></div>
 </template>
 
-<script>
-import {defineComponent, onMounted, onUnmounted, watch} from "vue";
-import Ball from "../Ball/Ball.ts";
-import store from "../store/index.ts";
+<script lang="ts">
+import {defineComponent, onMounted, onUnmounted } from "vue";
+import Ball from "../Ball/Ball";
+import store from "../store/index";
 
 export default defineComponent({
   name: "Ball",
   setup() {
     //当组件html加载完毕时new
-    let ball;
+    let ball: Ball;
 
     onMounted(() => {
       ball = new Ball();
