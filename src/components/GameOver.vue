@@ -2,15 +2,14 @@
   <div id="panel">
     <div id="panel_cont">
 
-      <div id="btn"><button @click="toHome">主页</button><button @click="settlement">结算</button></div>
+      <div id="btn"><button @click="toHome">主页</button></div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance } from "vue";
+import { defineComponent } from "vue";
 import router from "../router";
-import store from "../store";
 
 export default defineComponent({
   name: "GameOver",
@@ -20,13 +19,8 @@ export default defineComponent({
         router.push('/home');
       },300)
     }
-    const settlement = (): void => {
-      setTimeout(() => {
-        router.push('/settlement');
-      },300)
-    }
     return {
-      toHome,settlement
+      toHome
     }
   }
 });

@@ -2,8 +2,11 @@ import { createStore } from 'vuex'
 
 const store = createStore({
     state: {
-        platform: [0,0],
+        //[x, y, w, h]
+        platform: [0, 0, 0, 0],
+        baffle: [0, 0, 0, 0],
         isPlaying: false,
+        currentScore: 0,
     },
     mutations: {
     },

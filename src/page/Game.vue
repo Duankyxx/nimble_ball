@@ -1,5 +1,6 @@
 <template>
   <div id="cont">
+    <div id="box_score"><div id="score"></div></div>
     <div id="title"></div>
 
     <!--球-->
@@ -33,11 +34,17 @@ export default defineComponent({
       //开启触摸事件
       const cont = document.getElementById("cont")!;
       const btn = document.getElementById("btn_s")!;
+      const title = document.getElementById("title")!;
       let Max_X = (cont.clientWidth-20) - btn.clientWidth;
+
       //提供真实的值
       realityX.value = (cont.clientWidth/2)-btn.clientWidth/2;
-      //更改store
-      store.state.platform = [realityX.value,btn.clientWidth];
+
+      //设置需要绘制的三个点
+      const vHeight = window.innerHeight;
+      store.state.platform = [realityX.value, (vHeight - (btn.offsetTop + 75)), btn.clientWidth, btn.clientHeight];
+      const a = (cont.clientWidth/2)-(title.clientWidth/2);
+      store.state.baffle = [a, title.offsetTop, title.clientWidth, title.clientHeight];
 
       document.ontouchmove = (ev) => {
         //第一次值只做记录
@@ -54,15 +61,15 @@ export default defineComponent({
         if(realityX.value<0 || realityX.value>Max_X) {
           if (realityX.value<0) {
             realityX.value = 0;
-            store.state.platform = [0,btn.clientWidth];
+            store.state.platform[0] = 0;
           } else {
             realityX.value = Max_X;
-            store.state.platform = [Max_X,btn.clientWidth];
+            store.state.platform[0] = Max_X;
           }
           return;
         }
         //更改store
-        store.state.platform = [realityX.value,btn.clientWidth];
+        store.state.platform[0] = realityX.value;
         oldX = newX;
       }
       document.ontouchend = () => oldX = 0;
@@ -95,6 +102,40 @@ export default defineComponent({
   left: 50%;
   top: 10px;
 }
+/*得分动画*/
+#box_score {
+  width: calc(100% - 20px);
+  position: fixed;
+  top: 0;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#score {
+  width: 28.5%;
+  height: 30px;
+  background-color: #1f1f1f;
+  border-radius: 50px;
+}
+.score {
+  animation: Score 300ms ease-in-out 0s forwards;
+}
+@keyframes  Score{
+  0% {
+
+  }
+  50% {
+    width: 40%;
+    height: 40px;
+  }
+  100% {
+
+  }
+}
+
+
+
 #btn {
   width: 100%;
   height: 20%;

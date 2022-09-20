@@ -1,5 +1,4 @@
 import store from "../store";
-import {onUnmounted} from "vue";
 
 export default class Ball {
     //运动速度
@@ -27,18 +26,20 @@ export default class Ball {
 
     //start
     start = () => {
-        this.clock = setInterval(() => {
+        this.clock = setInterval((): void => {
             this.virtualToReal(this.X+this.initial_x, this.Y+this.initial_y);
         }, this.speed);
     }
 
     //虚拟定位转换真实定位
-    virtualToReal = (x: number, y: number) => {
+    virtualToReal = (x: number, y: number): void => {
         //处理碰到边缘时
         this.Margin(x, y);
 
         //触碰到平台时
-        this.touchPlatform(x, y);
+        this.drawEntity(store.state.platform, x, y);
+        //碰到记分板
+        if (this.drawEntity(store.state.baffle, x, y)) this.touchBaffle();
 
         const ball = document.getElementById('Ball')!;
         this.X = x;
@@ -48,7 +49,7 @@ export default class Ball {
     }
 
     //碰到边缘处理函数
-    Margin = (x: number, y: number) => {
+    Margin = (x: number, y: number): void => {
         if (x<0 || x>this.boundaryX) {
             if(x>this.boundaryX) {
                 this.initial_x = -2;
@@ -71,23 +72,39 @@ export default class Ball {
         }
     }
 
-    //碰到平台处理函数
-    touchPlatform = (x: number, y: number) => {
-        let cont = document.getElementById('cont')!;
-        let btn_s = document.getElementById('btn_s')!;
-        let platformMinY = cont.clientHeight - btn_s.offsetTop - btn_s.clientHeight - 60 - document.getElementById('Ball')!.clientHeight;
-        let platformMaxY = platformMinY+20;
-        // 73<y<93
-        if (platformMinY<y && y<platformMaxY) {
-            let { platform } = store.state;
-            if (platform[0]<x && x<(platform[0]+platform[1])) {
-                this.initial_y = -2;
+
+    //碰到title栏及其加分
+    touchBaffle = (): void => {
+        const score = document.getElementById("score")!;
+        //得分+动画
+        store.state.currentScore++;
+        score.className = "score";
+        setTimeout((): void => {
+            score.className = "";
+        },300)
+    }
+
+    //根据三个位置去绘制及其判断触碰
+    drawEntity = (coordinate: Array<number>, x: number, y: number): boolean => {
+        /*
+                a --> c
+                c --> a
+                d --> b
+                b --> d
+         */
+        // console.log(x,y,coordinate)
+        //a --> c   c --> a
+        if ((coordinate[1]<y && y<(coordinate[1]+coordinate[3])) || (coordinate[1]<(y+30) && (y+30)<(coordinate[1]+coordinate[3]))) {
+            if ((coordinate[0]<x && x<(coordinate[0]+coordinate[2])) || (coordinate[0]<(x+30) && (x+30)<(coordinate[0]+coordinate[2]))) {
+                this.initial_y = -this.initial_y;
+                return true;
             }
         }
+        return false;
     }
 
     //组件卸载时
-    Unmounted = () => {
+    Unmounted = (): void => {
         //停止游戏
         clearInterval(this.clock);
         store.state.isPlaying = false;

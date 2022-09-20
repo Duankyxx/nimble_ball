@@ -2,7 +2,8 @@
   <div id="cont">
     <!--title-->
     <div id="title_box">
-      <div id="title_block">{{title_msg}}</div>
+      <div id="title_block" v-show="!srore">{{title_msg}}</div>
+      <div id="title_block" class="sroce_block" v-show="srore"><p>上局分数:</p><a>{{store.state.currentScore}}</a></div>
     </div>
     <!--按钮-->
     <div  id="btn">
@@ -12,17 +13,26 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted} from "vue";
+import {defineComponent, onMounted } from "vue";
 import router from "../router";
 import store from "../store";
 
 export default defineComponent({
   name: "Home",
   setup() {
+    //判断分数是否为0
+    let srore: boolean = false;
+    if (store.state.currentScore !== 0) {
+      srore = true;
+    } else {
+      srore = false;
+    }
+
     let flag: boolean = true;
     const title_msg: string = "灵动球";
     //开始游戏
     const start = (): void => {
+      store.state.currentScore = 0;
       if (flag) {
         flag = false;
         //开启动画
@@ -43,7 +53,7 @@ export default defineComponent({
       },550);
     })
     return {
-      title_msg,start,flag
+      title_msg,start,flag,store,srore
     }
   }
 });
@@ -81,6 +91,12 @@ export default defineComponent({
   overflow: hidden;
   /*动画*/
   /*animation: Start 700ms ease-in-out 0s forwards;*/
+}
+.sroce_block {
+  flex-direction: column;
+}
+#title_block>p {
+  font-size: 40px;
 }
 .title_block2 {
   animation: ShowTitle_block 500ms ease-in-out forwards;
